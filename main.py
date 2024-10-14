@@ -2,25 +2,34 @@ import shades.usepackages as usepackages
 from shades.generator import generator
 from shades.data_sorter import data_sorter
 from shades.file_mover import file_mover
+import re
+import os
 
-def simple_classify(user_input):
-    keywords = {
-        "generate": "text_generator",
-        "create": "text_generator",
-        "write": "text_generator",
-        "sort": "data_sorter",
-        "order": "data_sorter",
-        "arrange": "data_sorter",
-        "move": "file_mover",
-        "copy": "file_mover",
-        "transfer": "file_mover"
-    }
-    
+def context_aware_classify(user_input):
     user_input = user_input.lower()
-    for keyword, tool in keywords.items():
-        if keyword in user_input:
-            return tool
-    return "text_generator"  # default tool
+    
+    # Check for file operations
+    if re.search(r'\b(move|copy|transfer)\b.*\b(file|directory|folder)\b', user_input):
+        return "file_mover"
+    
+    # Check for sorting operations
+    if re.search(r'\b(sort|order|arrange)\b.*\d', user_input):
+        return "data_sorter"
+    
+    # Default to text generation for any other input
+    return "text_generator"
+
+def preprocess_text_generator(user_input):
+    # Remove any text generation related keywords
+    keywords = ["generate", "create", "write"]
+    for keyword in keywords:
+        user_input = user_input.replace(keyword, "").strip()
+    return user_input
+
+def preprocess_data_sorter(user_input):
+    # Extract numbers from the input
+    numbers = re.findall(r'\d+', user_input)
+    return ", ".join(numbers)
 
 def execute_tool(tool_name, user_input):
     if tool_name == "text_generator":
@@ -33,8 +42,16 @@ def execute_tool(tool_name, user_input):
         return f"Unknown tool: {tool_name}"
 
 def route(user_input):
-    tool_name = simple_classify(user_input)
-    result = execute_tool(tool_name, user_input)
+    tool_name = context_aware_classify(user_input)
+    
+    if tool_name == "text_generator":
+        preprocessed_input = preprocess_text_generator(user_input)
+    elif tool_name == "data_sorter":
+        preprocessed_input = preprocess_data_sorter(user_input)
+    else:
+        preprocessed_input = user_input
+    
+    result = execute_tool(tool_name, preprocessed_input)
     return result
 
 def main():
@@ -44,7 +61,7 @@ def main():
     print("Examples:")
     print("- Generate a short story about a robot")
     print("- Sort these numbers: 5, 2, 8, 1, 9")
-    print("- Move file.txt to folder/newfile.txt")
+    print("- Can you move the file 'test.txt' into my directory '/Downloads'")
     print("Type 'exit' to quit.")
     print()
 
