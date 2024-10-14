@@ -1,0 +1,16 @@
+{
+    "packagename": "file_mover",
+    "script": "file_mover.py",
+    "inputs": {
+        "instruction": {
+            "type": "string",
+            "description": "The instruction for moving a file (e.g., 'Move source_file.txt to destination/folder/')"
+        }
+    },
+    "outputs": {
+        "result": {
+            "type": "string",
+            "description": "The result of the file moving operation"
+        }
+    }
+}

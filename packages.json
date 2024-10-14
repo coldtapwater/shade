@@ -1,0 +1,14 @@
+[
+    {
+        "path": "shades/generator",
+        "script": "generator.py"
+    },
+    {
+        "path": "shades/data_sorter",
+        "script": "data_sorter.py"
+    },
+    {
+        "path": "shades/file_mover",
+        "script": "file_mover.py"
+    }
+]

@@ -1,0 +1,16 @@
+{
+    "packagename": "data_sorter",
+    "script": "data_sorter.py",
+    "inputs": {
+        "data": {
+            "type": "string",
+            "description": "The string of numbers to be sorted"
+        }
+    },
+    "outputs": {
+        "sorted_data": {
+            "type": "string",
+            "description": "The sorted string of numbers"
+        }
+    }
+}
