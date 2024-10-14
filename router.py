@@ -1,45 +1,92 @@
-from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
-import torch
+import ollama
+import json
+import re
+from shades.generator import generator
+from shades.data_sorter import data_sorter
+from shades.file_mover import file_mover
 
-def load_model():
-    model_name = "distilbert-base-uncased-finetuned-sst-2-english"
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForSequenceClassification.from_pretrained(model_name)
-    return pipeline("text-classification", model=model, tokenizer=tokenizer)
+# Initialize Ollama client
+ollama_client = ollama.Client()
 
-def predict_tool(classifier, user_input):
-    result = classifier(user_input)
-    # For this example, we'll map the sentiment to tool names
-    # In a real scenario, you'd train a model specifically for tool classification
-    if result[0]['label'] == 'POSITIVE':
-        return "text_generator"
+def select_tools(user_input):
+    prompt = f"""
+    Given the following user input, determine the appropriate tool(s) to use and the order in which they should be applied. Available tools are:
+    1. text_generator: Generates text based on a prompt
+    2. data_sorter: Sorts numerical data
+    3. file_mover: Moves files from one location to another
+    4. file_writer: Creates a new file with specified content
+
+    User input: {user_input}
+
+    Respond with a list of tools and their inputs, one per line, in the following format:
+    tool: input
+    
+    For example:
+    file_writer: Create a file named 'example.txt' with content 'Hello, world!'
+    file_mover: Move 'example.txt' to '/Users/documents'
+    """
+
+    response = ollama_client.generate(model="llama3.2:1b", prompt=prompt)
+    response_text = response['response']
+    
+    tools = []
+    for line in response_text.split('\n'):
+        if ':' in line:
+            tool, input_text = line.split(':', 1)
+            tools.append({"tool": tool.strip(), "input": input_text.strip()})
+    
+    if not tools:
+        print("Error: Could not parse tool selection from Llama model")
+        # Fallback: use a simple keyword-based selection
+        if "sort" in user_input.lower():
+            tools = [{"tool": "data_sorter", "input": user_input}]
+        elif "move" in user_input.lower() or "copy" in user_input.lower():
+            tools = [{"tool": "file_mover", "input": user_input}]
+        elif "create" in user_input.lower() or "write" in user_input.lower():
+            tools = [{"tool": "file_writer", "input": user_input}]
+        else:
+            tools = [{"tool": "text_generator", "input": user_input}]
+    
+    return tools
+
+def execute_tool(tool, input_text):
+    if tool == "text_generator":
+        return generator.generate_response("llama3.2:1b", input_text)
+    elif tool == "data_sorter":
+        return data_sorter.sort_data(input_text)
+    elif tool == "file_mover":
+        return file_mover.move_file(input_text)
+    elif tool == "file_writer":
+        return file_writer(input_text)
     else:
-        return "data_sorter"
+        return f"Unknown tool: {tool}"
 
-def execute_tool(tool_name, user_input):
-    if tool_name == "text_generator":
-        return text_generator(user_input)
-    elif tool_name == "data_sorter":
-        return data_sorter(user_input)
-    else:
-        return f"Unknown tool: {tool_name}"
+def file_writer(input_text):
+    # Extract file name and content from input
+    match = re.search(r"Create a file named '(.+)' with content '(.+)'", input_text)
+    if not match:
+        return "Invalid input for file_writer"
+    file_name, content = match.groups()
 
-def text_generator(prompt):
-    # Placeholder for text generation tool
-    return f"Generated text based on: {prompt}"
-
-def data_sorter(data):
-    # Placeholder for data sorting tool
-    return f"Sorted data: {data}"
+    try:
+        with open(file_name, 'w') as f:
+            f.write(content)
+        return f"File '{file_name}' created successfully"
+    except Exception as e:
+        return f"Error creating file: {str(e)}"
 
 def route(user_input):
-    model = load_model()
-    tool_name = predict_tool(model, user_input)
-    result = execute_tool(tool_name, user_input)
-    return result
+    tools = select_tools(user_input)
+    results = []
+    for tool_info in tools:
+        tool = tool_info['tool']
+        input_text = tool_info['input']
+        result = execute_tool(tool, input_text)
+        results.append(result)
+    return " | ".join(results)
 
 if __name__ == "__main__":
     # Test the router
-    test_input = "Generate a short story about a robot"
+    test_input = "Create a file named 'test.txt' with content 'Hello, world!' and move it to '/Users/documents'"
     result = route(test_input)
     print(result)
