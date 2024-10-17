@@ -26,7 +26,7 @@ def search_contacts(contact_name):
             set thePhones to phones of aContact
             if (count of thePhones) > 0 then
                 set thePhone to value of first item of thePhones
-                set end of contactList to (name of aContact) & " - " & thePhone
+                set end of contactList to ((name of aContact) & " - " & thePhone)
             end if
         end repeat
         return contactList as list
