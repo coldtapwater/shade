@@ -1,4 +1,4 @@
-from gptme.tools.chats import list_chats, search_chats
+from shade.tools.chats import list_chats, search_chats
 
 
 def test_chats(capsys):

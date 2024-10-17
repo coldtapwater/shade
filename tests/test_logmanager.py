@@ -1,4 +1,4 @@
-from gptme.logmanager import LogManager, Message
+from shade.logmanager import LogManager, Message
 
 
 def test_branch():

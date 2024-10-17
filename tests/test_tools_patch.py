@@ -1,4 +1,4 @@
-from gptme.tools.patch import Patch, apply
+from shade.tools.patch import Patch, apply
 
 example_patch = """
 <<<<<<< ORIGINAL

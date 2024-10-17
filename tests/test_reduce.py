@@ -1,16 +1,16 @@
 from pathlib import Path
 
 import pytest
-from gptme.message import Message, len_tokens
-from gptme.reduce import reduce_log, truncate_msg
+from shade.message import Message, len_tokens
+from shade.reduce import reduce_log, truncate_msg
 
 # Project root
 root = Path(__file__).parent.parent
 
 # Some large files
 readme = root / "README.md"
-cli = root / "gptme" / "cli.py"
-htmlindex = root / "gptme" / "server" / "static" / "index.html"
+cli = root / "shade" / "cli.py"
+htmlindex = root / "shade" / "server" / "static" / "index.html"
 
 long_msg = Message(
     "system",

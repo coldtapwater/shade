@@ -1,4 +1,4 @@
-from gptme.codeblock import Codeblock
+from shade.codeblock import Codeblock
 
 
 def test_extract_codeblocks_basic():

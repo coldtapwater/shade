@@ -1,4 +1,4 @@
-from gptme.config import load_config
+from shade.config import load_config
 
 
 def test_load_config():

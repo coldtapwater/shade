@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 
-from gptme.logmanager import ConversationMeta, Log, get_user_conversations
+from shade.logmanager import ConversationMeta, Log, get_user_conversations
 
 # Set up logging
 logging.basicConfig(level=logging.ERROR)

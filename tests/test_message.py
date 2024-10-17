@@ -1,4 +1,4 @@
-from gptme.message import Message, msgs_to_toml, toml_to_msgs
+from shade.message import Message, msgs_to_toml, toml_to_msgs
 
 
 def test_toml():

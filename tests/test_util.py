@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from gptme.util import (
+from shade.util import (
     epoch_to_age,
     example_to_xml,
     generate_name,

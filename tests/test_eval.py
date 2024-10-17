@@ -1,9 +1,9 @@
 import pytest
 from click.testing import CliRunner
-from gptme.config import load_config
-from gptme.eval import execute, tests
-from gptme.eval.agents import GPTMe
-from gptme.eval.main import main
+from shade.config import load_config
+from shade.eval import execute, tests
+from shade.eval.agents import shade
+from shade.eval.main import main
 
 
 def _detect_model():
@@ -47,7 +47,7 @@ def test_eval(test):
     See pytest_generate_tests() below.
     """
     provider = _detect_model()
-    agent = GPTMe(provider)
+    agent = shade(provider)
     result = execute(test, agent, timeout=30, parallel=False)
     assert result.results
     assert all(case.passed for case in result.results)

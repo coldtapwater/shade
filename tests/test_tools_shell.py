@@ -1,4 +1,4 @@
-from gptme.tools.shell import _shorten_stdout
+from shade.tools.shell import _shorten_stdout
 
 
 def test_shorten_stdout_timestamp():

@@ -3,7 +3,7 @@ import tempfile
 from collections.abc import Generator
 
 import pytest
-from gptme.tools.shell import ShellSession, split_commands
+from shade.tools.shell import ShellSession, split_commands
 
 
 @pytest.fixture

@@ -8,9 +8,9 @@ flask = pytest.importorskip(
 
 # noreorder
 from flask.testing import FlaskClient  # fmt: skip
-from gptme.init import init  # fmt: skip
-from gptme.models import get_model  # fmt: skip
-from gptme.server.api import create_app  # fmt: skip
+from shade.init import init  # fmt: skip
+from shade.models import get_model  # fmt: skip
+from shade.server.api import create_app  # fmt: skip
 
 
 @pytest.fixture(autouse=True)

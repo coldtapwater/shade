@@ -12,7 +12,7 @@ from pathlib import Path
 
 import click
 import torch
-from gptme.util import is_generated_name
+from shade.util import is_generated_name
 from transformers import pipeline
 
 logger = logging.getLogger(__name__)

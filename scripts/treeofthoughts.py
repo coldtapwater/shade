@@ -16,11 +16,11 @@ import subprocess
 import sys
 from typing import Literal
 
-from gptme.chat import step as _step
-from gptme.init import init
-from gptme.logmanager import Log
-from gptme.message import Message
-from gptme.prompts import get_prompt
+from shade.chat import step as _step
+from shade.init import init
+from shade.logmanager import Log
+from shade.message import Message
+from shade.prompts import get_prompt
 from lxml import etree
 
 # Set up logging

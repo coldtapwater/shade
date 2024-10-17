@@ -1,6 +1,6 @@
 import json
 
-from gptme.tools.subagent import _extract_json
+from shade.tools.subagent import _extract_json
 
 
 def test_extract_json_block():

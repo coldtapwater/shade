@@ -1,7 +1,7 @@
 import pytest
-from gptme.message import len_tokens
-from gptme.prompts import get_prompt
-from gptme.tools import init_tools
+from shade.message import len_tokens
+from shade.prompts import get_prompt
+from shade.tools import init_tools
 
 
 @pytest.fixture(scope="module", autouse=True)

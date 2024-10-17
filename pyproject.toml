@@ -1,20 +1,20 @@
 [tool.poetry]
 name = "shade"
-version = "0.10.0"
+version = "1.0.0"
 description = "A fancy CLI to interact with LLMs in a Chat-style interface, with additional capabilities like executing commands on the local machine."
 authors = ["Jason Weiss <jason.awz2005@icloud.com>", "Erik Bjäreholt <erik@bjareho.lt>"]
 readme = "README.md"
 license = "MIT"
 packages = [
-    { include = "gptme" },
+    { include = "shade" },
 ]
 
-include = ["gptme/server/static/**/*", "media/logo.png"]
+include = ["shade/server/static/**/*", "media/logo.png"]
 
 [tool.poetry.scripts]
-gptme = "gptme.cli:main"
-gptme-server = "gptme.server.cli:main"
-gptme-eval = "gptme.eval.main:main"
+shade = "shade.cli:main"
+shade-server = "shade.server.cli:main"
+shade-eval = "shade.eval.main:main"
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -136,7 +136,7 @@ exclude_also = [
 
 # TODO: migrate to PEP 621 once supported by poetry
 #[project]
-#name = "gptme"
+#name = "shade"
 #dynamic = ["version"]
 #
 #[tool.setuptools.dynamic]
