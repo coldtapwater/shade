@@ -48,10 +48,10 @@ def prepare_message(phone_number, message):
 
 def contact_and_message(contact_name, message):
     """Search for a contact and prepare a message."""
-    print(f"Searching for contact '{contact_name}'...")
+    logger.info(f"Searching for contact '{contact_name}'...")
     contacts = search_contacts(contact_name)
     
-    print(f"Found contact")
+    logger.info(f"Found contact")
     
     if len(contacts) == 0:
         return f"No contacts found with the name '{contact_name}'."
@@ -60,9 +60,9 @@ def contact_and_message(contact_name, message):
         return f"Multiple contacts found with the name '{contact_name}'. Please specify which one:\n{contact_list}"
     else:
         name, phone = contacts[0].split(" - ")
-        print("preparing message")
+        logger.info("preparing message")
         prepare_message(phone, message)
-        print("Message prepared")
+        logger.info("Message prepared")
         return f"Message prepared for {name} ({phone}). Please check the Messages app to send it."
 
 instructions = """
