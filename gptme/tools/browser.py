@@ -1,3 +1,4 @@
+#browser.py
 """
 Tools to let the assistant control a browser, including:
  - loading pages

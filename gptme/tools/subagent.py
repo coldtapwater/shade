@@ -1,3 +1,4 @@
+#subagent.py
 """
 A subagent tool for gptme
 
