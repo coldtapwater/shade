@@ -13,7 +13,7 @@ def run_applescript(script):
     process = subprocess.Popen(['osascript', '-e', script], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = process.communicate()
     if err:
-        logger.error(f"AppleScript error: {err.decode().strip()}")
+        logger.error(f"AppleScript error: {err}")
     return out.decode().strip()
 
 def search_contacts(contact_name):
@@ -48,7 +48,10 @@ def prepare_message(phone_number, message):
 
 def contact_and_message(contact_name, message):
     """Search for a contact and prepare a message."""
+    print(f"Searching for contact '{contact_name}'...")
     contacts = search_contacts(contact_name)
+    
+    print(f"Found contact")
     
     if len(contacts) == 0:
         return f"No contacts found with the name '{contact_name}'."
@@ -57,7 +60,9 @@ def contact_and_message(contact_name, message):
         return f"Multiple contacts found with the name '{contact_name}'. Please specify which one:\n{contact_list}"
     else:
         name, phone = contacts[0].split(" - ")
+        print("preparing message")
         prepare_message(phone, message)
+        print("Message prepared")
         return f"Message prepared for {name} ({phone}). Please check the Messages app to send it."
 
 instructions = """
