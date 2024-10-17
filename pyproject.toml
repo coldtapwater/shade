@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "shade"
-version = "0.10"
+version = "0.10.0"
 description = "A fancy CLI to interact with LLMs in a Chat-style interface, with additional capabilities like executing commands on the local machine."
 authors = ["Jason Weiss <jason.awz2005@icloud.com>", "Erik Bjäreholt <erik@bjareho.lt>"]
 readme = "README.md"
