@@ -49,17 +49,17 @@ jobs:
 
     - name: Pull Docker image
       run: |
-        docker pull ghcr.io/${OWNER_LC}/gptme-eval${IMAGE_SUFFIX}:latest
+        docker pull ghcr.io/${OWNER_LC}/shade-eval${IMAGE_SUFFIX}:latest
 
-    - name: Write gptme config.toml
+    - name: Write shade config.toml
       shell: bash
       env:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       run: |
-        mkdir -p ~/.config/gptme
-        cat > ~/.config/gptme/config.toml << EOF
+        mkdir -p ~/.config/shade
+        cat > ~/.config/shade/config.toml << EOF
         [prompt]
         about_user = "I am a curious human programmer."
         response_preference = "Don't explain basic concepts"
@@ -69,8 +69,8 @@ jobs:
         ANTHROPIC_API_KEY = "$ANTHROPIC_API_KEY"
         OPENROUTER_API_KEY = "$OPENROUTER_API_KEY"
         EOF
-        cat ~/.config/gptme/config.toml
-        chmod -R o=rwx ~/.config/gptme
+        cat ~/.config/shade/config.toml
+        chmod -R o=rwx ~/.config/shade
 
     - name: Run evals
       run: |
@@ -93,9 +93,9 @@ jobs:
         chmod -R o=rwx $RESULTS_DIR  # make sure docker can read/write the dir
 
         docker run \
-          -v ~/.config/gptme:/home/appuser/.config/gptme \
+          -v ~/.config/shade:/home/appuser/.config/shade \
           -v $RESULTS_DIR:/app/eval_results \
-          ghcr.io/${OWNER_LC}/gptme-eval${IMAGE_SUFFIX}:latest \
+          ghcr.io/${OWNER_LC}/shade-eval${IMAGE_SUFFIX}:latest \
           ${SUITE:+"$SUITE"} \
           --timeout "$TIMEOUT" \
           $MODEL_ARGS

@@ -7,16 +7,16 @@ component_management:
     - component_id: module_core  # this is an identifier that should not be changed
       name: core  # this is a display name, and can be changed freely
       paths:
-        - gptme/*
+        - shade/*
     - component_id: module_tools
       name: tools
       paths:
-        - gptme/tools/**
+        - shade/tools/**
     - component_id: module_server
       name: server
       paths:
-        - gptme/server/**
+        - shade/server/**
     - component_id: module_eval
       name: eval
       paths:
-        - gptme/eval/**
+        - shade/eval/**

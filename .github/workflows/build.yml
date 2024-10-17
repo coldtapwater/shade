@@ -103,18 +103,18 @@ jobs:
     - name: Build Docker image (base)
       uses: docker/build-push-action@v3
       with:
-        tags: gptme:latest
+        tags: shade:latest
         file: ./scripts/Dockerfile
         context: .
         push: false
 
-    # We push seperately since we need the local gptme:latest tag (which cannot be pushed since we use ghcr.io)
+    # We push seperately since we need the local shade:latest tag (which cannot be pushed since we use ghcr.io)
     - name: Push Docker image (base)
       uses: docker/build-push-action@v3
       with:
         tags: |
-          ghcr.io/${{ env.OWNER_LC }}/gptme:latest
-          ghcr.io/${{ env.OWNER_LC }}/gptme:${{ env.SANITIZED_REF_NAME }}
+          ghcr.io/${{ env.OWNER_LC }}/shade:latest
+          ghcr.io/${{ env.OWNER_LC }}/shade:${{ env.SANITIZED_REF_NAME }}
         file: ./scripts/Dockerfile
         context: .
         push: true
@@ -124,8 +124,8 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         tags: |
-          ghcr.io/${{ env.OWNER_LC }}/gptme-eval:latest
-          ghcr.io/${{ env.OWNER_LC }}/gptme-eval:${{ env.SANITIZED_REF_NAME }}
+          ghcr.io/${{ env.OWNER_LC }}/shade-eval:latest
+          ghcr.io/${{ env.OWNER_LC }}/shade-eval:${{ env.SANITIZED_REF_NAME }}
         file: ./scripts/Dockerfile.eval
         context: .
         push: true
@@ -136,8 +136,8 @@ jobs:
     #  uses: docker/build-push-action@v3
     #  with:
     #    tags: |
-    #      ghcr.io/${{ env.OWNER_LC }}/gptme-eval-full:latest
-    #      ghcr.io/${{ env.OWNER_LC }}/gptme-eval-full:${{ env.SANITIZED_REF_NAME }}
+    #      ghcr.io/${{ env.OWNER_LC }}/shade-eval-full:latest
+    #      ghcr.io/${{ env.OWNER_LC }}/shade-eval-full:${{ env.SANITIZED_REF_NAME }}
     #    file: ./scripts/Dockerfile.eval
     #    context: .
     #    push: true
