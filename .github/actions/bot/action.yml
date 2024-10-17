@@ -1,5 +1,5 @@
-name: 'gptme-bot'
-description: 'A composite action for the gptme-bot workflow'
+name: 'shade-bot'
+description: 'A composite action for the shade-bot workflow'
 inputs:
   openai_api_key:
     description: 'OpenAI API Key'
@@ -16,7 +16,7 @@ inputs:
   allowlist:
     description: 'Comma-separated list of GitHub usernames allowed to trigger the bot'
     required: true
-    default: 'ErikBjare'
+    default: 'coldtapwater'
 
 runs:
   using: "composite"
@@ -35,25 +35,25 @@ runs:
         echo "head_ref=$(echo "$PR_DATA" | jq -r .head.ref)" >> $GITHUB_OUTPUT
         echo "base_ref=$(echo "$PR_DATA" | jq -r .base.ref)" >> $GITHUB_OUTPUT
 
-    - name: Detect gptme command
+    - name: Detect shade command
       id: detect_command
       shell: bash
       env:
         COMMENT_BODY: ${{ github.event.comment.body }}
       run: |
-        # Check if the comment starts with "@gptme"
-        if [[ "$COMMENT_BODY" == "@gptme "* ]]; then
+        # Check if the comment starts with "@shade"
+        if [[ "$COMMENT_BODY" == "@shade "* ]]; then
           # Extract the command
-          GPTME_COMMAND=${COMMENT_BODY#"@gptme "}
+          shade_COMMAND=${COMMENT_BODY#"@shade "}
           {
-            echo "gptme_command<<EOFMAGIC"
-            echo $GPTME_COMMAND
+            echo "shade_command<<EOFMAGIC"
+            echo $shade_COMMAND
             echo "EOFMAGIC"
           } >> $GITHUB_OUTPUT
         fi
 
     - name: Check allowlist
-      if: steps.detect_command.outputs.gptme_command
+      if: steps.detect_command.outputs.shade_command
       shell: bash
       run: |
         IFS=',' read -ra ALLOWLIST <<< "${{ inputs.allowlist }}"
@@ -63,7 +63,7 @@ runs:
         fi
 
     - name: React to comment
-      if: steps.detect_command.outputs.gptme_command
+      if: steps.detect_command.outputs.shade_command
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
@@ -71,7 +71,7 @@ runs:
         gh api /repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions -X POST -f content='+1'
 
     - name: Log in to GitHub Container Registry
-      if: steps.detect_command.outputs.gptme_command
+      if: steps.detect_command.outputs.shade_command
       uses: docker/login-action@v3
       with:
         registry: ghcr.io
@@ -79,19 +79,19 @@ runs:
         password: ${{ inputs.github_token }}
 
     - name: Pull Docker image
-      if: steps.detect_command.outputs.gptme_command
+      if: steps.detect_command.outputs.shade_command
       shell: bash
-      run: docker pull ghcr.io/erikbjare/gptme:latest
+      run: docker pull ghcr.io/erikbjare/shade:latest
 
     - name: Checkout PR branch if comment is on a PR
       id: checkout_branch
-      if: steps.detect_command.outputs.gptme_command
+      if: steps.detect_command.outputs.shade_command
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
       run: |
         IS_PR=${{ github.event.issue.pull_request != null }}
-        BRANCH_NAME=${{ steps.pr_details.outputs.head_ref || format('gptme/bot-changes-{0}', github.run_id) }}
+        BRANCH_NAME=${{ steps.pr_details.outputs.head_ref || format('shade/bot-changes-{0}', github.run_id) }}
 
         if [[ "$IS_PR" == "true" ]]; then
           git fetch origin $BRANCH_NAME
@@ -101,13 +101,13 @@ runs:
         fi
         echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
 
-    - name: Write gptme config.toml
+    - name: Write shade config.toml
       shell: bash
       run: |
-        mkdir -p ~/.config/gptme
-        cat > ~/.config/gptme/config.toml << EOF
+        mkdir -p ~/.config/shade
+        cat > ~/.config/shade/config.toml << EOF
         [prompt]
-        about_user = "The user is talking to the gptme bot through GitHub comments. They have initiated conversation by pinging it with @gptme, triggering a GitHub Action in which gptme now runs."
+        about_user = "The user is talking to the shade bot through GitHub comments. They have initiated conversation by pinging it with @shade, triggering a GitHub Action in which shade now runs."
         response_preference = "Don't explain basic concepts"
 
         [env]
@@ -119,16 +119,16 @@ runs:
 
     - name: Determine action type
       id: determine_action
-      if: steps.detect_command.outputs.gptme_command
+      if: steps.detect_command.outputs.shade_command
       shell: bash
       env:
-        GPTME_COMMAND: ${{ steps.detect_command.outputs.gptme_command }}
+        shade_COMMAND: ${{ steps.detect_command.outputs.shade_command }}
       run: |
         FULL_OUTPUT=$(docker run --rm \
-          -v ~/.config/gptme:/home/appuser/.config/gptme \
-          ghcr.io/erikbjare/gptme:latest \
+          -v ~/.config/shade:/home/appuser/.config/shade \
+          ghcr.io/erikbjare/shade:latest \
           --non-interactive \
-          "Determine if this command requires changes to be made or just a response. Respond with either 'make_changes' or 'respond'. Command: $GPTME_COMMAND")
+          "Determine if this command requires changes to be made or just a response. Respond with either 'make_changes' or 'respond'. Command: $shade_COMMAND")
 
         # Extract the last line, which should be the actual response
         ACTION_TYPE=$(echo "$FULL_OUTPUT" | grep -oE '(make_changes|respond)' | tail -n 1)
@@ -145,14 +145,14 @@ runs:
 
     - name: Get context
       id: context
-      if: steps.detect_command.outputs.gptme_command
+      if: steps.detect_command.outputs.shade_command
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
       run: |
         # download shorten_details script
         SCRIPTDIR=$(mktemp -d)
-        curl -s https://raw.githubusercontent.com/ErikBjare/gptme/master/scripts/shorten_details.py > $SCRIPTDIR/shorten_details.py
+        curl -s https://raw.githubusercontent.com/ErikBjare/shade/master/scripts/shorten_details.py > $SCRIPTDIR/shorten_details.py
         chmod +x $SCRIPTDIR/shorten_details.py
 
         NUM=${{ github.event.issue.number }}
@@ -176,12 +176,12 @@ runs:
         # output context dir
         echo "dir=$CTXDIR" >> $GITHUB_OUTPUT
 
-    - name: Run gptme
-      if: steps.detect_command.outputs.gptme_command
+    - name: Run shade
+      if: steps.detect_command.outputs.shade_command
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
-        GPTME_COMMAND: ${{ steps.detect_command.outputs.gptme_command }}
+        shade_COMMAND: ${{ steps.detect_command.outputs.shade_command }}
       run: |
         echo "Running in $GITHUB_WORKSPACE"
         CTXDIR=${{ steps.context.outputs.dir }}
@@ -189,16 +189,16 @@ runs:
         # make sure anyone (even docker) can read/write the workspace
         chmod -R o=rwx .
 
-        # run gptme with the extracted command and save logs
+        # run shade with the extracted command and save logs
         # TODO: actually move the <system> tag into a system message
         timeout 120 docker run --rm \
-          -v ~/.config/gptme:/home/appuser/.config/gptme \
+          -v ~/.config/shade:/home/appuser/.config/shade \
           -v $GITHUB_WORKSPACE:/workspace \
           -v $CTXDIR:$CTXDIR \
           -w /workspace \
-          ghcr.io/erikbjare/gptme:latest \
+          ghcr.io/erikbjare/shade:latest \
           --non-interactive \
-          "$GPTME_COMMAND" \
+          "$shade_COMMAND" \
           "<system>" \
           "The project has been cloned to the current directory and can be explored with git, cat, etc." \
           "Here is the context:" $CTXDIR/* \
@@ -217,30 +217,30 @@ runs:
         git add -A
 
     - name: Commit, push, comment
-      if: steps.detect_command.outputs.gptme_command && steps.determine_action.outputs.action_type == 'make_changes'
+      if: steps.detect_command.outputs.shade_command && steps.determine_action.outputs.action_type == 'make_changes'
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
       run: |
         # generate commit message
         docker run --rm \
-          -v ~/.config/gptme:/home/appuser/.config/gptme \
+          -v ~/.config/shade:/home/appuser/.config/shade \
           -v $GITHUB_WORKSPACE:/workspace \
           -w /workspace \
-          ghcr.io/erikbjare/gptme:latest \
+          ghcr.io/erikbjare/shade:latest \
           --non-interactive \
           "Run 'git diff --staged' to inspect what has changed." \
           "-" "Write a commit message for it to 'message.txt'. Use the 'conventional commits' style."
 
         # Read and format log
-        ./scripts/format_log.sh ~/.local/share/gptme/logs/*/conversation.jsonl > log.txt
+        ./scripts/format_log.sh ~/.local/share/shade/logs/*/conversation.jsonl > log.txt
 
         RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         COMMENT_URL="https://github.com/${{ github.repository }}/issues/${{ github.event.issue.number }}#issuecomment-${{ github.event.comment.id }}"
 
         # commit message & description
         COMMIT_MSG="$(cat message.txt || echo 'no commit message')"
-        COMMIT_DESC="\`gptme '${{ steps.detect_command.outputs.gptme_command }}'\`
+        COMMIT_DESC="\`shade '${{ steps.detect_command.outputs.shade_command }}'\`
 
         Triggered by: $COMMENT_URL
         Run: $RUN_URL"
@@ -258,8 +258,8 @@ runs:
         <pre>$(cat log.txt || echo 'could not get log')</pre>
         </details>"
 
-        git config user.name "gptme-bot"
-        git config user.email "gptme-bot@superuserlabs.org"
+        git config user.name "shade-bot"
+        git config user.email "shade-bot@superuserlabs.org"
 
         git commit -m "$COMMIT_MSG_FULL"
 

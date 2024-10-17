@@ -18,6 +18,7 @@ from .subagent import tool as subagent_tool
 from .tmux import tool as tmux_tool
 from .vision import tool as vision_tool
 from .youtube import tool as youtube_tool
+from .contacts import tool as contact_and_message
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +44,7 @@ all_tools: list[ToolSpec] = [
     youtube_tool,
     screenshot_tool,
     vision_tool,
+    contact_and_message,
     # python tool is loaded last to ensure all functions are registered
     python_tool,
 ]
