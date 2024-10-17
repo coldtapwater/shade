@@ -23,9 +23,13 @@ def search_contacts(contact_name):
         set matchingContacts to (every person whose name contains "{contact_name}")
         set contactList to {{}}
         repeat with aContact in matchingContacts
-            set end of contactList to (name of aContact) & " - " & ((value of phone of aContact) as string)
+            set thePhones to phones of aContact
+            if (count of thePhones) > 0 then
+                set thePhone to value of first item of thePhones
+                set end of contactList to (name of aContact) & " - " & thePhone
+            end if
         end repeat
-        return contactList
+        return contactList as list
     end tell
     '''
     return run_applescript(script).split(", ")
